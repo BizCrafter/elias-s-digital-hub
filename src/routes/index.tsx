@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { ArrowUpRight, Mail } from "lucide-react";
 import { OrbitVisual } from "@/components/OrbitVisual";
@@ -37,11 +38,42 @@ export const Route = createFileRoute("/")({
 });
 
 function Index() {
+  useEffect(() => {
+    let frame = 0;
+
+    const updateCursor = (clientX: number, clientY: number) => {
+      if (frame) cancelAnimationFrame(frame);
+
+      frame = requestAnimationFrame(() => {
+        document.documentElement.style.setProperty("--cursor-x", `${clientX}px`);
+        document.documentElement.style.setProperty("--cursor-y", `${clientY}px`);
+      });
+    };
+
+    const handlePointerMove = (event: PointerEvent) => {
+      updateCursor(event.clientX, event.clientY);
+    };
+
+    window.addEventListener("pointermove", handlePointerMove, { passive: true });
+    updateCursor(window.innerWidth * 0.72, window.innerHeight * 0.3);
+
+    return () => {
+      if (frame) cancelAnimationFrame(frame);
+      window.removeEventListener("pointermove", handlePointerMove);
+    };
+  }, []);
+
   return (
-    <main className="relative min-h-screen overflow-hidden bg-background text-foreground">
-      <Hero />
-      <Booking />
-      <Footer />
+    <main className="page-cursor relative min-h-screen overflow-hidden bg-background text-foreground">
+      <div aria-hidden="true" className="pointer-events-none fixed inset-0 z-0">
+        <div className="cursor-glow absolute inset-0" />
+        <div className="cursor-mesh absolute inset-0" />
+      </div>
+      <div className="relative z-10">
+        <Hero />
+        <Booking />
+        <Footer />
+      </div>
     </main>
   );
 }
@@ -130,7 +162,7 @@ function Hero() {
           className="relative aspect-square w-full max-w-[480px] justify-self-center animate-fade-in"
           style={{ animationDelay: "0.2s" }}
         >
-          <div className="absolute inset-0 animate-float">
+          <div className="absolute inset-0">
             <OrbitVisual />
           </div>
         </div>

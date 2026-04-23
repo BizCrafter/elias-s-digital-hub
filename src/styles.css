@@ -61,6 +61,8 @@
 
 :root {
   --radius: 0.75rem;
+  --cursor-x: 72vw;
+  --cursor-y: 30vh;
   --background: oklch(0.99 0.003 100);
   --foreground: oklch(0.18 0.01 260);
   --card: oklch(1 0 0);
@@ -124,6 +126,25 @@
 @layer utilities {
   .font-display { font-family: var(--font-display); font-weight: 400; letter-spacing: -0.02em; }
   .bg-hero { background: var(--gradient-hero); }
+  .page-cursor { isolation: isolate; }
+  .cursor-glow {
+    background:
+      radial-gradient(28rem circle at var(--cursor-x) var(--cursor-y), oklch(0.9 0.07 90 / 0.22), transparent 42%),
+      radial-gradient(36rem circle at calc(var(--cursor-x) - 12vw) calc(var(--cursor-y) + 10vh), oklch(0.82 0.07 230 / 0.14), transparent 50%);
+    filter: blur(18px);
+    opacity: 0.95;
+    will-change: background;
+  }
+  .cursor-mesh {
+    background-image:
+      linear-gradient(oklch(0.78 0.02 250 / 0.08) 1px, transparent 1px),
+      linear-gradient(90deg, oklch(0.78 0.02 250 / 0.08) 1px, transparent 1px);
+    background-position: center;
+    background-size: 64px 64px;
+    mask-image: radial-gradient(24rem circle at var(--cursor-x) var(--cursor-y), black 0%, transparent 72%);
+    -webkit-mask-image: radial-gradient(24rem circle at var(--cursor-x) var(--cursor-y), black 0%, transparent 72%);
+    opacity: 0.5;
+  }
   .text-gradient {
     background: var(--gradient-text);
     background-size: 200% 100%;
