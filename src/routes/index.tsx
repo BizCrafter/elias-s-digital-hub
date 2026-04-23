@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { ArrowUpRight, Mail, Sparkles } from "lucide-react";
+import { ArrowUpRight, Mail } from "lucide-react";
 import { OrbitVisual } from "@/components/OrbitVisual";
 import { CalendlyEmbed } from "@/components/CalendlyEmbed";
 import { Typewriter } from "@/components/Typewriter";
@@ -80,13 +80,6 @@ function Hero() {
       <div className="grain absolute inset-0" />
       <div className="relative mx-auto grid max-w-6xl grid-cols-1 gap-12 px-6 pb-24 pt-36 md:grid-cols-[1.2fr_1fr] md:pt-44 md:pb-32">
         <div className="flex flex-col justify-center">
-          <div
-            className="inline-flex w-fit items-center gap-2 rounded-full border border-border bg-background/60 px-3 py-1 text-xs text-muted-foreground backdrop-blur animate-fade-in"
-            style={{ animationDelay: "0.05s" }}
-          >
-            <Sparkles className="h-3 w-3" />
-            Founder · Researcher · Investor-in-the-making
-          </div>
 
           <h1
             className="mt-6 font-display text-5xl leading-[1.05] tracking-tight md:text-7xl min-h-[6em] md:min-h-[5em]"
