@@ -1,5 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { ArrowUpRight, Mail, Sparkles } from "lucide-react";
+import { OrbitVisual } from "@/components/OrbitVisual";
+import { CalendlyEmbed } from "@/components/CalendlyEmbed";
 
 function LinkedinIcon({ className }: { className?: string }) {
   return (
@@ -8,8 +10,6 @@ function LinkedinIcon({ className }: { className?: string }) {
     </svg>
   );
 }
-import { OrbitVisual } from "@/components/OrbitVisual";
-import { CalendlyEmbed } from "@/components/CalendlyEmbed";
 
 // TODO: Replace with your real Calendly URL once created (e.g. https://calendly.com/eliasrapp/intro)
 const CALENDLY_URL = "https://calendly.com/eliasrapp/30min";
