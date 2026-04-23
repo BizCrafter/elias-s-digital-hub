@@ -82,7 +82,7 @@ function Hero() {
         <div className="flex flex-col justify-center">
 
           <h1
-            className="mt-6 font-display text-5xl leading-[1.05] tracking-tight md:text-7xl min-h-[6em] md:min-h-[5em]"
+            className="mt-6 whitespace-pre-line font-display text-5xl leading-[1.05] tracking-tight md:text-7xl min-h-[8em] md:min-h-[7em]"
           >
             <Typewriter
               startDelay={400}
@@ -90,7 +90,7 @@ function Hero() {
               segments={[
                 { text: "Hi! I'm ", className: "text-foreground" },
                 { text: "Elias Rapp", className: "text-gradient" },
-                { text: ". ", className: "text-foreground" },
+                { text: ".\n\n", className: "text-foreground" },
                 {
                   text: "Researching at the intersection of ",
                   className: "italic text-muted-foreground",
@@ -101,7 +101,11 @@ function Hero() {
                   text: "private equity",
                   className: "font-display not-italic text-foreground",
                 },
-                { text: ".", className: "text-foreground" },
+                { text: ".\n\n", className: "text-foreground" },
+                {
+                  text: "If this resonates, feel free to book a call.",
+                  className: "italic text-muted-foreground",
+                },
               ]}
             />
           </h1>
