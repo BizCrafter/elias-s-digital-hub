@@ -82,7 +82,7 @@ function Hero() {
         <div className="flex flex-col justify-center">
 
           <h1
-            className="mt-6 whitespace-pre-line font-display text-5xl leading-[1.05] tracking-tight md:text-7xl min-h-[6em] md:min-h-[5em]"
+            className="mt-6 whitespace-pre-line font-display text-5xl leading-[1.25] tracking-tight md:text-7xl md:leading-[1.2] min-h-[6em] md:min-h-[5em]"
           >
             <Typewriter
               startDelay={400}
@@ -112,7 +112,7 @@ function Hero() {
 
 
           <div
-            className="mt-4 flex flex-wrap items-center gap-3 animate-fade-up"
+            className="-mt-2 flex flex-wrap items-center gap-3 animate-fade-up"
             style={{ animationDelay: "0.4s" }}
           >
             <a
