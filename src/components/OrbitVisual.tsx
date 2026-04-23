@@ -163,6 +163,22 @@ export function OrbitVisual() {
         <circle cx={inner.x} cy={inner.y} r="2.5" fill="currentColor" />
       </g>
 
+      {/* ring 4 — minutes (innermost) */}
+      <g className="text-foreground">
+        <ellipse
+          cx="200"
+          cy="200"
+          rx="70"
+          ry="70"
+          fill="none"
+          stroke="currentColor"
+          strokeOpacity="0.1"
+          strokeWidth="1"
+          strokeDasharray="1 4"
+        />
+        <circle cx={minute.x} cy={minute.y} r="2" fill="currentColor" />
+      </g>
+
       {/* center label */}
       <text
         x="200"
@@ -170,12 +186,12 @@ export function OrbitVisual() {
         textAnchor="middle"
         className="fill-muted-foreground"
         style={{
-          fontSize: "9px",
+          fontSize: "8px",
           letterSpacing: "0.2em",
           textTransform: "uppercase",
         }}
       >
-        Days since ChatGPT
+        Days since ChatGPT launched
       </text>
       <text
         x="200"
