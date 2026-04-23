@@ -80,6 +80,7 @@ function markerPos(
 
 export function OrbitVisual() {
   const [snap, setSnap] = useState<Snapshot>(() => computeSnapshot(LAUNCH));
+  const [intro, setIntro] = useState(0); // 0 → 1 over the intro animation
 
   useEffect(() => {
     const tick = () => setSnap(computeSnapshot(new Date()));
@@ -88,10 +89,24 @@ export function OrbitVisual() {
     return () => window.clearInterval(id);
   }, []);
 
-  const outer = markerPos(170, 60, snap.progressYear); // years
-  const middle = markerPos(135, 135, snap.progressDay); // days
-  const inner = markerPos(95, 38, snap.progressHour, -25); // hours
-  const minute = markerPos(70, 70, snap.progressMinute); // minutes
+  useEffect(() => {
+    const duration = 1800; // ms
+    const start = performance.now();
+    let raf = 0;
+    const ease = (t: number) => 1 - Math.pow(1 - t, 3); // easeOutCubic
+    const step = (now: number) => {
+      const t = Math.min(1, (now - start) / duration);
+      setIntro(ease(t));
+      if (t < 1) raf = requestAnimationFrame(step);
+    };
+    raf = requestAnimationFrame(step);
+    return () => cancelAnimationFrame(raf);
+  }, []);
+
+  const outer = markerPos(170, 60, snap.progressYear * intro); // years
+  const middle = markerPos(135, 135, snap.progressDay * intro); // days
+  const inner = markerPos(95, 38, snap.progressHour * intro, -25); // hours
+  const minute = markerPos(70, 70, snap.progressMinute * intro); // minutes
 
   const days = snap.totalDays.toLocaleString();
 
