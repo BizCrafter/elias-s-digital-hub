@@ -299,8 +299,6 @@ function Footer() {
           <a href={LINKEDIN_URL} target="_blank" rel="noreferrer" className="hover:text-foreground">
             LinkedIn
           </a>
-          <a href="https://alven.at" className="hover:text-foreground">Alven</a>
-          <a href={`mailto:${EMAIL}`} className="hover:text-foreground">{EMAIL}</a>
         </div>
       </div>
     </footer>
