@@ -19,6 +19,7 @@ type Snapshot = {
   progressYear: number;
   progressDay: number;
   progressHour: number;
+  progressMinute: number;
 };
 
 function computeSnapshot(now: Date): Snapshot {
@@ -52,10 +53,13 @@ function computeSnapshot(now: Date): Snapshot {
     now.getUTCMilliseconds();
   const progressHour = msIntoHour / 3600_000;
 
+  const msIntoMinute = now.getUTCSeconds() * 1000 + now.getUTCMilliseconds();
+  const progressMinute = msIntoMinute / 60_000;
+
   // Suppress unused warning — kept for clarity that we read launchYear
   void launchYear;
 
-  return { totalDays, progressYear, progressDay, progressHour };
+  return { totalDays, progressYear, progressDay, progressHour, progressMinute };
 }
 
 /** Polar marker position on an ellipse, with optional tilt (deg). */
@@ -87,6 +91,7 @@ export function OrbitVisual() {
   const outer = markerPos(170, 60, snap.progressYear); // years
   const middle = markerPos(135, 135, snap.progressDay); // days
   const inner = markerPos(95, 38, snap.progressHour, -25); // hours
+  const minute = markerPos(70, 70, snap.progressMinute); // minutes
 
   const days = snap.totalDays.toLocaleString();
 
@@ -158,6 +163,22 @@ export function OrbitVisual() {
         <circle cx={inner.x} cy={inner.y} r="2.5" fill="currentColor" />
       </g>
 
+      {/* ring 4 — minutes (innermost) */}
+      <g className="text-foreground">
+        <ellipse
+          cx="200"
+          cy="200"
+          rx="70"
+          ry="70"
+          fill="none"
+          stroke="currentColor"
+          strokeOpacity="0.1"
+          strokeWidth="1"
+          strokeDasharray="1 4"
+        />
+        <circle cx={minute.x} cy={minute.y} r="2" fill="currentColor" />
+      </g>
+
       {/* center label */}
       <text
         x="200"
@@ -165,12 +186,12 @@ export function OrbitVisual() {
         textAnchor="middle"
         className="fill-muted-foreground"
         style={{
-          fontSize: "9px",
+          fontSize: "8px",
           letterSpacing: "0.2em",
           textTransform: "uppercase",
         }}
       >
-        Days since ChatGPT
+        Days since ChatGPT launched
       </text>
       <text
         x="200"
