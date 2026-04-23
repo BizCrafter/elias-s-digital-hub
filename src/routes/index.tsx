@@ -101,18 +101,14 @@ function Hero() {
                   text: "private equity",
                   className: "font-display not-italic text-foreground",
                 },
-                { text: ".\n", className: "text-foreground" },
-                {
-                  text: "If this resonates, feel free to book a call.",
-                  className: "italic text-muted-foreground",
-                },
+                { text: ".", className: "text-foreground" },
               ]}
             />
           </h1>
 
 
           <div
-            className="-mt-2 flex flex-wrap items-center gap-3 animate-fade-up"
+            className="mt-10 flex flex-wrap items-center gap-3 animate-fade-up"
             style={{ animationDelay: "0.4s" }}
           >
             <a
