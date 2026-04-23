@@ -13,8 +13,8 @@ function LinkedinIcon({ className }: { className?: string }) {
 }
 
 // TODO: Replace with your real Calendly URL once created (e.g. https://calendly.com/eliasrapp/intro)
-const CALENDLY_URL = "https://calendly.com/eliasrapp/30min";
-const LINKEDIN_URL = "https://www.linkedin.com/in/eliasrapp/";
+const CALENDLY_URL = "https://calendly.com/elias-rapp-icons/30min";
+const LINKEDIN_URL = "https://www.linkedin.com/in/elias-rapp/";
 const EMAIL = "hello@eliasrapp.com";
 
 export const Route = createFileRoute("/")({
