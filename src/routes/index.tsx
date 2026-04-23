@@ -92,7 +92,7 @@ function Hero() {
                 { text: "Elias Rapp", className: "text-gradient" },
                 { text: ". ", className: "text-foreground" },
                 {
-                  text: "Researching and building at the intersection of ",
+                  text: "Researching at the intersection of ",
                   className: "italic text-muted-foreground",
                 },
                 { text: "AI", className: "font-display not-italic text-foreground" },
