@@ -142,27 +142,6 @@ function Hero() {
         </div>
       </div>
 
-      {/* Marquee */}
-      <div className="relative border-y border-border/60 bg-background/40 backdrop-blur">
-        <div className="flex overflow-hidden py-4">
-          <div className="flex shrink-0 animate-marquee gap-12 whitespace-nowrap px-6 text-sm uppercase tracking-[0.2em] text-muted-foreground">
-            {Array.from({ length: 2 }).map((_, i) => (
-              <div key={i} className="flex gap-12">
-                <span>Artificial Intelligence</span>
-                <span>·</span>
-                <span>Private Equity</span>
-                <span>·</span>
-                <span>Venture Capital</span>
-                <span>·</span>
-                <span>Founder · Alven</span>
-                <span>·</span>
-                <span>Vienna 🇦🇹</span>
-                <span>·</span>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
     </section>
   );
 }
