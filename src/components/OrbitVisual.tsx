@@ -145,6 +145,14 @@ export function OrbitVisual() {
           strokeWidth="1"
         />
         <circle cx={outer.x} cy={outer.y} r="3.5" fill="currentColor" />
+        <text
+          x={outer.x + 8}
+          y={outer.y + 3}
+          className="fill-muted-foreground"
+          style={{ fontSize: "7px", letterSpacing: "0.18em", textTransform: "uppercase" }}
+        >
+          yr
+        </text>
       </g>
 
       {/* ring 2 — days (clock) */}
@@ -161,6 +169,14 @@ export function OrbitVisual() {
           strokeDasharray="2 6"
         />
         <circle cx={middle.x} cy={middle.y} r="2.5" fill="currentColor" />
+        <text
+          x={middle.x + 7}
+          y={middle.y + 3}
+          className="fill-muted-foreground"
+          style={{ fontSize: "7px", letterSpacing: "0.18em", textTransform: "uppercase" }}
+        >
+          day
+        </text>
       </g>
 
       {/* ring 3 — hours (small tilted) */}
@@ -176,6 +192,14 @@ export function OrbitVisual() {
           transform="rotate(-25 200 200)"
         />
         <circle cx={inner.x} cy={inner.y} r="2.5" fill="currentColor" />
+        <text
+          x={inner.x + 7}
+          y={inner.y + 3}
+          className="fill-muted-foreground"
+          style={{ fontSize: "7px", letterSpacing: "0.18em", textTransform: "uppercase" }}
+        >
+          hr
+        </text>
       </g>
 
       {/* ring 4 — minutes (innermost) */}
@@ -192,6 +216,14 @@ export function OrbitVisual() {
           strokeDasharray="1 4"
         />
         <circle cx={minute.x} cy={minute.y} r="2" fill="currentColor" />
+        <text
+          x={minute.x + 6}
+          y={minute.y + 3}
+          className="fill-muted-foreground"
+          style={{ fontSize: "7px", letterSpacing: "0.18em", textTransform: "uppercase" }}
+        >
+          min
+        </text>
       </g>
 
       {/* center label */}
