@@ -174,7 +174,7 @@ function Footer() {
   return (
     <footer className="border-t border-border">
       <div className="mx-auto flex max-w-6xl flex-col items-start justify-between gap-6 px-6 py-10 text-sm text-muted-foreground sm:flex-row sm:items-center">
-        <div>© {new Date().getFullYear()} Elias Rapp · Vienna</div>
+        <div>© {new Date().getFullYear()} Elias Rapp</div>
         <div className="flex items-center gap-6">
           <a href={LINKEDIN_URL} target="_blank" rel="noreferrer" className="hover:text-foreground">
             LinkedIn
