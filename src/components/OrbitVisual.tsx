@@ -91,6 +91,7 @@ export function OrbitVisual() {
   const outer = markerPos(170, 60, snap.progressYear); // years
   const middle = markerPos(135, 135, snap.progressDay); // days
   const inner = markerPos(95, 38, snap.progressHour, -25); // hours
+  const minute = markerPos(70, 70, snap.progressMinute); // minutes
 
   const days = snap.totalDays.toLocaleString();
 
