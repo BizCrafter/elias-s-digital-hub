@@ -19,6 +19,7 @@ type Snapshot = {
   progressYear: number;
   progressDay: number;
   progressHour: number;
+  progressMinute: number;
 };
 
 function computeSnapshot(now: Date): Snapshot {
