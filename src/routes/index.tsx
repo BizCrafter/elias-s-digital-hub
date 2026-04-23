@@ -1,5 +1,13 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { ArrowUpRight, Linkedin, Mail, Sparkles } from "lucide-react";
+import { ArrowUpRight, Mail, Sparkles } from "lucide-react";
+
+function LinkedinIcon({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="currentColor" className={className} aria-hidden="true">
+      <path d="M20.45 20.45h-3.55v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.13 1.45-2.13 2.94v5.67H9.37V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.45v6.29zM5.34 7.43a2.06 2.06 0 1 1 0-4.13 2.06 2.06 0 0 1 0 4.13zM7.12 20.45H3.56V9h3.56v11.45z"/>
+    </svg>
+  );
+}
 import { OrbitVisual } from "@/components/OrbitVisual";
 import { CalendlyEmbed } from "@/components/CalendlyEmbed";
 
@@ -118,7 +126,7 @@ function Hero() {
               rel="noreferrer"
               className="inline-flex items-center gap-2 rounded-full border border-border bg-background/60 px-5 py-3 text-sm font-medium backdrop-blur transition-colors hover:bg-secondary"
             >
-              <Linkedin className="h-4 w-4" />
+              <LinkedinIcon className="h-4 w-4" />
               LinkedIn
             </a>
           </div>
