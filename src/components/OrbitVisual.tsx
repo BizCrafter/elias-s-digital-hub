@@ -1,38 +1,101 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useState } from "react";
 
 /**
- * Animated orbital visualization — three rings (AI, Private Equity, Venture)
- * intersecting at a luminous core. Pure SVG + requestAnimationFrame, no deps.
+ * "Time since ChatGPT" orbital clock.
+ *
+ * Three rings encode real, live data measured from the launch of ChatGPT
+ * (30 November 2022, UTC):
+ *   - outer ring marker → progress through the current year since launch
+ *   - middle ring marker → progress through the current day (clock)
+ *   - inner ring marker → progress through the current hour
+ * The glowing core shows the total number of days elapsed.
  */
+
+const LAUNCH = new Date(Date.UTC(2022, 10, 30, 0, 0, 0)); // 2022-11-30T00:00:00Z
+const MS_PER_DAY = 1000 * 60 * 60 * 24;
+
+type Snapshot = {
+  totalDays: number;
+  progressYear: number;
+  progressDay: number;
+  progressHour: number;
+};
+
+function computeSnapshot(now: Date): Snapshot {
+  const elapsedMs = Math.max(0, now.getTime() - LAUNCH.getTime());
+  const totalDays = Math.floor(elapsedMs / MS_PER_DAY);
+
+  // Progress through current year-since-launch (anniversary based)
+  const launchYear = LAUNCH.getUTCFullYear();
+  const launchMonth = LAUNCH.getUTCMonth();
+  const launchDay = LAUNCH.getUTCDate();
+  let anniversaryYear = now.getUTCFullYear();
+  let lastAnniv = Date.UTC(anniversaryYear, launchMonth, launchDay);
+  if (lastAnniv > now.getTime()) {
+    anniversaryYear -= 1;
+    lastAnniv = Date.UTC(anniversaryYear, launchMonth, launchDay);
+  }
+  const nextAnniv = Date.UTC(anniversaryYear + 1, launchMonth, launchDay);
+  const progressYear = (now.getTime() - lastAnniv) / (nextAnniv - lastAnniv);
+
+  // Progress through current day & hour (UTC, deterministic for SSR)
+  const msIntoDay =
+    now.getUTCHours() * 3600_000 +
+    now.getUTCMinutes() * 60_000 +
+    now.getUTCSeconds() * 1000 +
+    now.getUTCMilliseconds();
+  const progressDay = msIntoDay / MS_PER_DAY;
+
+  const msIntoHour =
+    now.getUTCMinutes() * 60_000 +
+    now.getUTCSeconds() * 1000 +
+    now.getUTCMilliseconds();
+  const progressHour = msIntoHour / 3600_000;
+
+  // Suppress unused warning — kept for clarity that we read launchYear
+  void launchYear;
+
+  return { totalDays, progressYear, progressDay, progressHour };
+}
+
+/** Polar marker position on an ellipse, with optional tilt (deg). */
+function markerPos(
+  rx: number,
+  ry: number,
+  progress: number,
+  tiltDeg = 0,
+): { x: number; y: number } {
+  const angle = progress * Math.PI * 2 - Math.PI / 2; // start at 12 o'clock
+  const ex = rx * Math.cos(angle);
+  const ey = ry * Math.sin(angle);
+  const t = (tiltDeg * Math.PI) / 180;
+  const x = ex * Math.cos(t) - ey * Math.sin(t);
+  const y = ex * Math.sin(t) + ey * Math.cos(t);
+  return { x: 200 + x, y: 200 + y };
+}
+
 export function OrbitVisual() {
-  const ref = useRef<SVGSVGElement>(null);
+  const [snap, setSnap] = useState<Snapshot>(() => computeSnapshot(LAUNCH));
 
   useEffect(() => {
-    let raf = 0;
-    let t = 0;
-    const animate = () => {
-      t += 0.0035;
-      const svg = ref.current;
-      if (svg) {
-        const r1 = svg.querySelector<SVGGElement>("[data-ring='1']");
-        const r2 = svg.querySelector<SVGGElement>("[data-ring='2']");
-        const r3 = svg.querySelector<SVGGElement>("[data-ring='3']");
-        if (r1) r1.setAttribute("transform", `rotate(${(t * 40).toFixed(2)} 200 200)`);
-        if (r2) r2.setAttribute("transform", `rotate(${(-t * 28).toFixed(2)} 200 200)`);
-        if (r3) r3.setAttribute("transform", `rotate(${(t * 18).toFixed(2)} 200 200)`);
-      }
-      raf = requestAnimationFrame(animate);
-    };
-    raf = requestAnimationFrame(animate);
-    return () => cancelAnimationFrame(raf);
+    const tick = () => setSnap(computeSnapshot(new Date()));
+    tick();
+    const id = window.setInterval(tick, 1000);
+    return () => window.clearInterval(id);
   }, []);
+
+  const outer = markerPos(170, 60, snap.progressYear); // years
+  const middle = markerPos(135, 135, snap.progressDay); // days
+  const inner = markerPos(95, 38, snap.progressHour, -25); // hours
+
+  const days = snap.totalDays.toLocaleString();
 
   return (
     <svg
-      ref={ref}
       viewBox="0 0 400 400"
       className="h-full w-full"
-      aria-hidden="true"
+      role="img"
+      aria-label={`${days} days since the launch of ChatGPT`}
     >
       <defs>
         <radialGradient id="core" cx="50%" cy="50%" r="50%">
@@ -50,8 +113,8 @@ export function OrbitVisual() {
       {/* glow core */}
       <circle cx="200" cy="200" r="120" fill="url(#core)" />
 
-      {/* ring 1 — large tilted ellipse */}
-      <g data-ring="1" className="text-foreground">
+      {/* ring 1 — years (large tilted ellipse) */}
+      <g className="text-foreground">
         <ellipse
           cx="200"
           cy="200"
@@ -61,11 +124,11 @@ export function OrbitVisual() {
           stroke="url(#ringStroke)"
           strokeWidth="1"
         />
-        <circle cx="370" cy="200" r="3.5" fill="currentColor" />
+        <circle cx={outer.x} cy={outer.y} r="3.5" fill="currentColor" />
       </g>
 
-      {/* ring 2 — medium */}
-      <g data-ring="2" className="text-foreground">
+      {/* ring 2 — days (clock) */}
+      <g className="text-foreground">
         <ellipse
           cx="200"
           cy="200"
@@ -77,11 +140,11 @@ export function OrbitVisual() {
           strokeWidth="1"
           strokeDasharray="2 6"
         />
-        <circle cx="335" cy="200" r="2.5" fill="currentColor" />
+        <circle cx={middle.x} cy={middle.y} r="2.5" fill="currentColor" />
       </g>
 
-      {/* ring 3 — small tilted */}
-      <g data-ring="3" className="text-foreground">
+      {/* ring 3 — hours (small tilted) */}
+      <g className="text-foreground">
         <ellipse
           cx="200"
           cy="200"
@@ -92,11 +155,32 @@ export function OrbitVisual() {
           strokeWidth="1"
           transform="rotate(-25 200 200)"
         />
-        <circle cx="295" cy="200" r="2.5" fill="currentColor" />
+        <circle cx={inner.x} cy={inner.y} r="2.5" fill="currentColor" />
       </g>
 
-      {/* center dot */}
-      <circle cx="200" cy="200" r="5" fill="currentColor" className="text-foreground" />
+      {/* center label */}
+      <text
+        x="200"
+        y="188"
+        textAnchor="middle"
+        className="fill-muted-foreground"
+        style={{
+          fontSize: "9px",
+          letterSpacing: "0.2em",
+          textTransform: "uppercase",
+        }}
+      >
+        Days since ChatGPT
+      </text>
+      <text
+        x="200"
+        y="220"
+        textAnchor="middle"
+        className="fill-foreground font-display"
+        style={{ fontSize: "32px", letterSpacing: "-0.02em" }}
+      >
+        {days}
+      </text>
     </svg>
   );
 }
