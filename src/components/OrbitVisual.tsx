@@ -53,10 +53,13 @@ function computeSnapshot(now: Date): Snapshot {
     now.getUTCMilliseconds();
   const progressHour = msIntoHour / 3600_000;
 
+  const msIntoMinute = now.getUTCSeconds() * 1000 + now.getUTCMilliseconds();
+  const progressMinute = msIntoMinute / 60_000;
+
   // Suppress unused warning — kept for clarity that we read launchYear
   void launchYear;
 
-  return { totalDays, progressYear, progressDay, progressHour };
+  return { totalDays, progressYear, progressDay, progressHour, progressMinute };
 }
 
 /** Polar marker position on an ellipse, with optional tilt (deg). */
