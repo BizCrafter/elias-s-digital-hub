@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { ArrowUpRight, Mail, Sparkles } from "lucide-react";
 import { OrbitVisual } from "@/components/OrbitVisual";
 import { CalendlyEmbed } from "@/components/CalendlyEmbed";
+import { Typewriter } from "@/components/Typewriter";
 
 function LinkedinIcon({ className }: { className?: string }) {
   return (
@@ -88,26 +89,30 @@ function Hero() {
           </div>
 
           <h1
-            className="mt-6 font-display text-5xl leading-[1.02] tracking-tight md:text-7xl animate-fade-up"
-            style={{ animationDelay: "0.1s" }}
+            className="mt-6 font-display text-5xl leading-[1.05] tracking-tight md:text-7xl min-h-[6em] md:min-h-[5em]"
           >
-            <span className="text-gradient">Elias Rapp.</span>
-            <br />
-            <span className="italic text-muted-foreground">Building at the</span>
-            <br />
-            intersection of <em className="font-display not-italic">AI</em>,{" "}
-            <em className="font-display not-italic">Private Equity</em> &{" "}
-            <em className="font-display not-italic">Venture</em>.
+            <Typewriter
+              startDelay={400}
+              speed={32}
+              segments={[
+                { text: "Hi! I'm ", className: "text-foreground" },
+                { text: "Elias Rapp", className: "text-gradient" },
+                { text: ". ", className: "text-foreground" },
+                {
+                  text: "Researching and building at the intersection of ",
+                  className: "italic text-muted-foreground",
+                },
+                { text: "AI", className: "font-display not-italic text-foreground" },
+                { text: " and ", className: "italic text-muted-foreground" },
+                {
+                  text: "private equity",
+                  className: "font-display not-italic text-foreground",
+                },
+                { text: ".", className: "text-foreground" },
+              ]}
+            />
           </h1>
 
-          <p
-            className="mt-8 max-w-xl text-base leading-relaxed text-muted-foreground md:text-lg animate-fade-up"
-            style={{ animationDelay: "0.25s" }}
-          >
-            Soon-to-be founder of <span className="text-foreground">Alven</span>. Currently
-            researching how artificial intelligence reshapes deal-making, diligence and
-            value creation in private markets.
-          </p>
 
           <div
             className="mt-10 flex flex-wrap items-center gap-3 animate-fade-up"
