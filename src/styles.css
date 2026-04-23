@@ -121,29 +121,72 @@
     -webkit-font-smoothing: antialiased;
     font-feature-settings: "ss01", "cv11";
   }
+  /* Hide native cursor site-wide except over third-party embeds (e.g. Calendly iframe),
+     where cross-origin content ignores parent cursor:none and would flicker. */
+  @media (pointer: fine) {
+    body.use-site-cursor:not(.calendly-area-hover),
+    body.use-site-cursor:not(.calendly-area-hover) * {
+      cursor: none !important;
+    }
+  }
 }
 
 @layer utilities {
   .font-display { font-family: var(--font-display); font-weight: 400; letter-spacing: -0.02em; }
   .bg-hero { background: var(--gradient-hero); }
-  .page-cursor { isolation: isolate; }
   .cursor-glow {
     background:
-      radial-gradient(28rem circle at var(--cursor-x) var(--cursor-y), oklch(0.9 0.07 90 / 0.22), transparent 42%),
-      radial-gradient(36rem circle at calc(var(--cursor-x) - 12vw) calc(var(--cursor-y) + 10vh), oklch(0.82 0.07 230 / 0.14), transparent 50%);
-    filter: blur(18px);
-    opacity: 0.95;
+      radial-gradient(9rem circle at var(--cursor-x) var(--cursor-y), oklch(0.95 0.08 90 / 0.22), transparent 42%),
+      radial-gradient(12rem circle at calc(var(--cursor-x) - 2.5rem) calc(var(--cursor-y) + 1.5rem), oklch(0.82 0.08 250 / 0.12), transparent 48%);
+    filter: blur(10px);
+    opacity: 0.75;
+    mix-blend-mode: soft-light;
     will-change: background;
   }
   .cursor-mesh {
     background-image:
-      linear-gradient(oklch(0.78 0.02 250 / 0.08) 1px, transparent 1px),
-      linear-gradient(90deg, oklch(0.78 0.02 250 / 0.08) 1px, transparent 1px);
+      linear-gradient(oklch(0.5 0.02 250 / 0.1) 1px, transparent 1px),
+      linear-gradient(90deg, oklch(0.5 0.02 250 / 0.1) 1px, transparent 1px);
     background-position: center;
     background-size: 64px 64px;
-    mask-image: radial-gradient(24rem circle at var(--cursor-x) var(--cursor-y), black 0%, transparent 72%);
-    -webkit-mask-image: radial-gradient(24rem circle at var(--cursor-x) var(--cursor-y), black 0%, transparent 72%);
+    mask-image: radial-gradient(7rem circle at var(--cursor-x) var(--cursor-y), black 0%, transparent 68%);
+    -webkit-mask-image: radial-gradient(7rem circle at var(--cursor-x) var(--cursor-y), black 0%, transparent 68%);
+    opacity: 0.25;
+    mix-blend-mode: multiply;
+  }
+  .site-cursor {
+    position: fixed;
+    left: var(--cursor-x);
+    top: var(--cursor-y);
+    z-index: 1;
+    width: 1.125rem;
+    height: 1.125rem;
+    border-radius: 50%;
+    border: 1px solid color-mix(in oklch, var(--color-foreground) 28%, transparent);
+    background: color-mix(in oklch, var(--color-foreground) 4%, transparent);
+    transform: translate(-50%, -50%);
+    transition: width 0.15s ease, height 0.15s ease, border-color 0.15s ease, background-color 0.15s ease;
+  }
+  .site-cursor::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 2.5px;
+    height: 2.5px;
+    border-radius: 50%;
+    background: var(--color-foreground);
     opacity: 0.5;
+    transform: translate(-50%, -50%);
+  }
+  .site-cursor--active {
+    width: 1.7rem;
+    height: 1.7rem;
+    border-color: color-mix(in oklch, var(--color-foreground) 42%, transparent);
+    background: color-mix(in oklch, var(--color-foreground) 2%, transparent);
+  }
+  .site-cursor--active::after {
+    opacity: 0.65;
   }
   .text-gradient {
     background: var(--gradient-text);

@@ -1,9 +1,11 @@
-import { useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { createFileRoute } from "@tanstack/react-router";
 import { ArrowUpRight, Mail } from "lucide-react";
 import { OrbitVisual } from "@/components/OrbitVisual";
 import { CalendlyEmbed } from "@/components/CalendlyEmbed";
 import { Typewriter } from "@/components/Typewriter";
+import { cn } from "@/lib/utils";
 
 function LinkedinIcon({ className }: { className?: string }) {
   return (
@@ -37,41 +39,116 @@ export const Route = createFileRoute("/")({
   component: Index,
 });
 
-function Index() {
+const interactiveSelector =
+  'a[href], button, [role="button"], [type="button"], [type="submit"], [type="reset"], input, label, select, textarea, [tabindex]:not([tabindex="-1"])';
+
+function isInteractiveElement(el: Element | null) {
+  if (!el) return false;
+  if (el instanceof HTMLIFrameElement) return true;
+  return el.closest(interactiveSelector) != null;
+}
+
+/** Renders above page content so the spotlight is visible; pointer events pass through. */
+function CursorFollowEffect({ inCalendlyZone }: { inCalendlyZone: boolean }) {
+  const [layerRoot, setLayerRoot] = useState<HTMLElement | null>(null);
+  const [useSiteCursor, setUseSiteCursor] = useState(false);
+  const [overInteractive, setOverInteractive] = useState(false);
+  const wasInteractive = useRef(false);
+
   useEffect(() => {
+    setLayerRoot(document.body);
+  }, []);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const fine = window.matchMedia("(pointer: fine)").matches;
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    setUseSiteCursor(fine && !reduceMotion);
+  }, []);
+
+  useEffect(() => {
+    if (!useSiteCursor) return;
+    document.body.classList.add("use-site-cursor");
+    return () => {
+      document.body.classList.remove("use-site-cursor");
+      document.body.classList.remove("calendly-area-hover");
+    };
+  }, [useSiteCursor]);
+
+  useEffect(() => {
+    if (!useSiteCursor) {
+      document.body.classList.remove("calendly-area-hover");
+      return;
+    }
+    if (inCalendlyZone) document.body.classList.add("calendly-area-hover");
+    else document.body.classList.remove("calendly-area-hover");
+  }, [inCalendlyZone, useSiteCursor]);
+
+  useEffect(() => {
+    if (!layerRoot) return;
+
     let frame = 0;
 
-    const updateCursor = (clientX: number, clientY: number) => {
+    const run = (clientX: number, clientY: number) => {
       if (frame) cancelAnimationFrame(frame);
 
       frame = requestAnimationFrame(() => {
         document.documentElement.style.setProperty("--cursor-x", `${clientX}px`);
         document.documentElement.style.setProperty("--cursor-y", `${clientY}px`);
+
+        if (useSiteCursor) {
+          const under = document.elementFromPoint(clientX, clientY);
+          const onInteractive = isInteractiveElement(under);
+          if (onInteractive !== wasInteractive.current) {
+            wasInteractive.current = onInteractive;
+            setOverInteractive(onInteractive);
+          }
+        }
       });
     };
 
     const handlePointerMove = (event: PointerEvent) => {
-      updateCursor(event.clientX, event.clientY);
+      run(event.clientX, event.clientY);
     };
 
     window.addEventListener("pointermove", handlePointerMove, { passive: true });
-    updateCursor(window.innerWidth * 0.72, window.innerHeight * 0.3);
+    run(window.innerWidth * 0.5, window.innerHeight * 0.35);
 
     return () => {
       if (frame) cancelAnimationFrame(frame);
       window.removeEventListener("pointermove", handlePointerMove);
     };
-  }, []);
+  }, [layerRoot, useSiteCursor]);
+
+  if (!layerRoot) return null;
+
+  const showCustomCursorLayer = useSiteCursor && !inCalendlyZone;
+
+  return createPortal(
+    <div className="pointer-events-none fixed inset-0 z-30" aria-hidden>
+      {showCustomCursorLayer ? (
+        <>
+          <div className="cursor-glow absolute inset-0" />
+          <div className="cursor-mesh absolute inset-0" />
+          <div
+            className={cn("site-cursor", overInteractive && "site-cursor--active")}
+          />
+        </>
+      ) : null}
+    </div>,
+    layerRoot,
+  );
+}
+
+function Index() {
+  const [inCalendlyZone, setInCalendlyZone] = useState(false);
 
   return (
-    <main className="page-cursor relative min-h-screen overflow-hidden bg-background text-foreground">
-      <div aria-hidden="true" className="pointer-events-none fixed inset-0 z-0">
-        <div className="cursor-glow absolute inset-0" />
-        <div className="cursor-mesh absolute inset-0" />
-      </div>
+    <main className="relative min-h-screen overflow-hidden bg-background text-foreground">
+      <CursorFollowEffect inCalendlyZone={inCalendlyZone} />
       <div className="relative z-10">
         <Hero />
-        <Booking />
+        <Booking onCalendlyZoneChange={setInCalendlyZone} />
         <Footer />
       </div>
     </main>
@@ -172,7 +249,7 @@ function Hero() {
   );
 }
 
-function Booking() {
+function Booking({ onCalendlyZoneChange }: { onCalendlyZoneChange: (inside: boolean) => void }) {
   return (
     <section id="book" className="relative border-t border-border bg-secondary/40">
       <div className="mx-auto max-w-6xl px-6 py-28 md:py-36">
@@ -196,7 +273,7 @@ function Booking() {
             Or email me
           </a>
         </div>
-        <CalendlyEmbed url={CALENDLY_URL} />
+        <CalendlyEmbed url={CALENDLY_URL} onInWidgetChange={onCalendlyZoneChange} />
       </div>
     </section>
   );
