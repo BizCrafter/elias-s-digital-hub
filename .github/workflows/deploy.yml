@@ -17,12 +17,21 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 22
 
-      - run: npm install
-      - run: npm run build
+      - run: npm ci
+      - name: Build static site
+        env:
+          GITHUB_PAGES: "true"
+        run: npm run build
 
-      - uses: peaceiris/actions-gh-pages@v3
+      - name: Add GitHub Pages entrypoints
+        run: |
+          cp dist/client/_shell.html dist/client/index.html
+          cp dist/client/_shell.html dist/client/404.html
+          touch dist/client/.nojekyll
+
+      - uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./dist
+          publish_dir: ./dist/client
