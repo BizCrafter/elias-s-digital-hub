@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { ArrowUpRight, Linkedin, Mail, Sparkles } from "lucide-react";
+import { ArrowUpRight, Linkedin as LinkedinIcon, Mail, Sparkles } from "lucide-react";
 import { OrbitVisual } from "@/components/OrbitVisual";
 import { CalendlyEmbed } from "@/components/CalendlyEmbed";
 
