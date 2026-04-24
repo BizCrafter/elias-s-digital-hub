@@ -134,24 +134,44 @@
 @layer utilities {
   .font-display { font-family: var(--font-display); font-weight: 400; letter-spacing: -0.02em; }
   .bg-hero { background: var(--gradient-hero); }
+  /**
+   * Cursor glow: small layer moved with transform (compositor) instead of
+   * full-viewport background + filter blur, which was repainting the whole page every frame.
+   */
+  .cursor-fx-blob {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 32rem;
+    height: 32rem;
+    z-index: 0;
+    pointer-events: none;
+    contain: strict;
+    will-change: transform;
+    transform: translate3d(calc(var(--cursor-x) - 16rem), calc(var(--cursor-y) - 16rem), 0);
+  }
   .cursor-glow {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
     background:
-      radial-gradient(9rem circle at var(--cursor-x) var(--cursor-y), oklch(0.95 0.08 90 / 0.22), transparent 42%),
-      radial-gradient(12rem circle at calc(var(--cursor-x) - 2.5rem) calc(var(--cursor-y) + 1.5rem), oklch(0.82 0.08 250 / 0.12), transparent 48%);
-    filter: blur(10px);
+      radial-gradient(9rem circle at 50% 50%, oklch(0.95 0.08 90 / 0.22), transparent 42%),
+      radial-gradient(12rem circle at calc(50% - 2.5rem) calc(50% + 1.5rem), oklch(0.82 0.08 250 / 0.12), transparent 48%);
+    filter: blur(8px);
     opacity: 0.75;
     mix-blend-mode: soft-light;
-    will-change: background;
   }
+  /* Full-page grid is static: following the cursor in mask-image was full-screen repaint per frame. */
   .cursor-mesh {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
     background-image:
       linear-gradient(oklch(0.5 0.02 250 / 0.1) 1px, transparent 1px),
       linear-gradient(90deg, oklch(0.5 0.02 250 / 0.1) 1px, transparent 1px);
     background-position: center;
     background-size: 64px 64px;
-    mask-image: radial-gradient(7rem circle at var(--cursor-x) var(--cursor-y), black 0%, transparent 68%);
-    -webkit-mask-image: radial-gradient(7rem circle at var(--cursor-x) var(--cursor-y), black 0%, transparent 68%);
-    opacity: 0.25;
+    opacity: 0.12;
     mix-blend-mode: multiply;
   }
   .site-cursor {

@@ -54,6 +54,8 @@ function CursorFollowEffect({ inCalendlyZone }: { inCalendlyZone: boolean }) {
   const [useSiteCursor, setUseSiteCursor] = useState(false);
   const [overInteractive, setOverInteractive] = useState(false);
   const wasInteractive = useRef(false);
+  const inCalendlyRef = useRef(false);
+  inCalendlyRef.current = inCalendlyZone;
 
   useEffect(() => {
     setLayerRoot(document.body);
@@ -85,37 +87,50 @@ function CursorFollowEffect({ inCalendlyZone }: { inCalendlyZone: boolean }) {
   }, [inCalendlyZone, useSiteCursor]);
 
   useEffect(() => {
-    if (!layerRoot) return;
+    if (!layerRoot || !useSiteCursor) return;
 
-    let frame = 0;
+    const last = {
+      x: window.innerWidth * 0.5,
+      y: window.innerHeight * 0.35,
+    };
+    let raf = 0;
+    let hitT = 0;
 
-    const run = (clientX: number, clientY: number) => {
-      if (frame) cancelAnimationFrame(frame);
+    const apply = () => {
+      raf = 0;
+      if (inCalendlyRef.current) return;
 
-      frame = requestAnimationFrame(() => {
-        document.documentElement.style.setProperty("--cursor-x", `${clientX}px`);
-        document.documentElement.style.setProperty("--cursor-y", `${clientY}px`);
+      const { x: clientX, y: clientY } = last;
+      document.documentElement.style.setProperty("--cursor-x", `${clientX}px`);
+      document.documentElement.style.setProperty("--cursor-y", `${clientY}px`);
 
-        if (useSiteCursor) {
-          const under = document.elementFromPoint(clientX, clientY);
-          const onInteractive = isInteractiveElement(under);
-          if (onInteractive !== wasInteractive.current) {
-            wasInteractive.current = onInteractive;
-            setOverInteractive(onInteractive);
-          }
+      // elementFromPoint layout work — run every 2nd frame; cursor position is still 60fps
+      hitT += 1;
+      if (hitT & 1) {
+        const under = document.elementFromPoint(clientX, clientY);
+        const onInteractive = isInteractiveElement(under);
+        if (onInteractive !== wasInteractive.current) {
+          wasInteractive.current = onInteractive;
+          setOverInteractive(onInteractive);
         }
-      });
+      }
     };
 
     const handlePointerMove = (event: PointerEvent) => {
-      run(event.clientX, event.clientY);
+      last.x = event.clientX;
+      last.y = event.clientY;
+      if (raf) return;
+      raf = requestAnimationFrame(apply);
     };
 
     window.addEventListener("pointermove", handlePointerMove, { passive: true });
-    run(window.innerWidth * 0.5, window.innerHeight * 0.35);
+    // Prime CSS vars
+    last.x = window.innerWidth * 0.5;
+    last.y = window.innerHeight * 0.35;
+    requestAnimationFrame(apply);
 
     return () => {
-      if (frame) cancelAnimationFrame(frame);
+      if (raf) cancelAnimationFrame(raf);
       window.removeEventListener("pointermove", handlePointerMove);
     };
   }, [layerRoot, useSiteCursor]);
@@ -128,11 +143,15 @@ function CursorFollowEffect({ inCalendlyZone }: { inCalendlyZone: boolean }) {
     <div className="pointer-events-none fixed inset-0 z-30" aria-hidden>
       {showCustomCursorLayer ? (
         <>
-          <div className="cursor-glow absolute inset-0" />
-          <div className="cursor-mesh absolute inset-0" />
-          <div
-            className={cn("site-cursor", overInteractive && "site-cursor--active")}
-          />
+          <div className="absolute inset-0">
+            <div className="cursor-mesh" />
+            <div className="cursor-fx-blob" aria-hidden>
+              <div className="cursor-glow" />
+            </div>
+            <div
+              className={cn("site-cursor", overInteractive && "site-cursor--active")}
+            />
+          </div>
         </>
       ) : null}
     </div>,
